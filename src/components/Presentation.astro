@@ -1,0 +1,439 @@
+<div>
+  <button id="start-presentation" class="start-button">Start Presentation</button>
+
+  <div id="presentation-container" class="presentation-container presentation-hidden">
+    <div id="presentation-controls" class="presentation-controls">
+      <button id="fullscreen-button" class="presentation-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+      </button>
+      <div class="presentation-progress"></div>
+      <div class="presentation-indicators">
+        <span id="slide-counter">1</span>/<span id="slide-total">0</span>
+      </div>
+    </div>
+    <div id="presentation-content" class="presentation-content"></div>
+  </div>
+</div>
+
+<script>
+  // Properly typed elements
+  const button = document.getElementById('start-presentation') as HTMLButtonElement | null;
+  const fullscreenButton = document.getElementById('fullscreen-button') as HTMLButtonElement;
+  const slideCounter = document.getElementById('slide-counter') as HTMLSpanElement;
+  const slideTotal = document.getElementById('slide-total') as HTMLSpanElement;
+  const slides = Array.from(document.querySelectorAll('.presentation-slide')) as HTMLElement[];
+  
+  let currentSlide: number = 0;
+  let isPresenting: boolean = false;
+  let isFullscreen: boolean = false;
+  
+  // Function to setup slides with proper typing
+  function setupSlides(): void {
+    console.log(`Setting up ${slides.length} slides`);
+    
+    // Update the slide counter
+    if (slideTotal) {
+      slideTotal.textContent = slides.length.toString();
+    }
+    
+    // Hide all slides except the first one
+    slides.forEach((slide: HTMLElement, index: number) => {
+      slide.setAttribute('data-slide-index', index.toString());
+      
+      if (index === currentSlide) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    });
+    
+    // Update the progress indicator
+    updateProgress();
+  }
+  
+  // Show the current slide
+  function showSlide(index: number): void {
+    if (index >= 0 && index < slides.length) {
+      currentSlide = index;
+      
+      // Update slides visibility
+      slides.forEach((slide: HTMLElement, i: number) => {
+        if (i === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+      
+      // Update counter and progress
+      if (slideCounter) {
+        slideCounter.textContent = (currentSlide + 1).toString();
+      }
+      
+      updateProgress();
+    }
+  }
+  
+  // Go to next slide
+  function nextSlide(): void {
+    if (currentSlide < slides.length - 1) {
+      showSlide(currentSlide + 1);
+    }
+  }
+  
+  // Go to previous slide
+  function prevSlide(): void {
+    if (currentSlide > 0) {
+      showSlide(currentSlide - 1);
+    }
+  }
+  
+  // Update progress indicator
+  function updateProgress(): void {
+    const progress = ((currentSlide + 1) / slides.length) * 100;
+    document.documentElement.style.setProperty('--presentation-progress', `${progress}%`);
+  }
+  
+  // Toggle fullscreen mode
+  function toggleFullscreen(): void {
+    if (!isFullscreen) {
+      document.body.classList.add('presentation-fullscreen');
+      isFullscreen = true;
+      
+      if (fullscreenButton) {
+        fullscreenButton.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+        `;
+      }
+    } else {
+      document.body.classList.remove('presentation-fullscreen');
+      isFullscreen = false;
+      
+      if (fullscreenButton) {
+        fullscreenButton.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        `;
+      }
+    }
+  }
+  
+  // Handle keyboard navigation
+  function handleKeyPress(e: KeyboardEvent): void {
+    if (!isPresenting) return;
+    
+    console.log(`Key pressed: ${e.key}`);
+    
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      // Next slide
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    } else if (e.key === 'ArrowLeft') {
+      // Previous slide
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    } else if (e.key === 'Escape') {
+      // Exit presentation
+      exitPresentation();
+    } else if (e.key === 'f') {
+      toggleFullscreen();
+    }
+  }
+  
+  function exitPresentation(): void {
+    console.log("Exiting presentation");
+    isPresenting = false;
+    document.body.classList.remove('presentation-mode');
+    
+    // Restore slides to normal display for the page
+    slides.forEach((slide: HTMLElement) => {
+      slide.style.display = '';
+    });
+  }
+  
+  // Initialize presentation
+  if (button && slides.length > 0) {
+    console.log(`Initialized with ${slides.length} slides`);
+    
+    // Setup slides
+    setupSlides();
+    
+    // Add click handler to start button
+    button.addEventListener('click', () => {
+      isPresenting = true;
+      document.body.classList.add('presentation-mode');
+      currentSlide = 0;
+      showSlide(currentSlide);
+    });
+    
+    // Add keyboard handler
+    document.addEventListener('keydown', handleKeyPress);
+  } else {
+    console.error("Presentation initialization failed:", 
+      button ? "Button found" : "Button not found", 
+      `${slides.length} slides found`);
+  }
+</script>
+
+<style is:global>
+  /* Button styling */
+  .start-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 16px 0;
+  }
+  
+  /* Hide regular content in presentation mode */
+  body.presentation-mode {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  body.presentation-mode > *:not(.presentation-slide) {
+    display: none !important;
+  }
+  
+  /* Make slides visible in presentation mode */
+  body.presentation-mode .presentation-slide {
+    display: none; /* Will be overridden for current slide */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 40px !important;
+    box-sizing: border-box !important;
+    background-color: white !important;
+    color: #333 !important;
+    z-index: 9999 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: auto !important;
+  }
+  
+  /* Basic slide content styling in presentation mode */
+  body.presentation-mode .presentation-slide h1 {
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  body.presentation-mode .presentation-slide h2 {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  body.presentation-mode .presentation-slide ul,
+  body.presentation-mode .presentation-slide ol {
+    margin-left: 2rem !important;
+    margin-bottom: 1rem !important;
+    font-size: 1.5rem !important;
+  }
+  
+  body.presentation-mode .presentation-slide p {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  body.presentation-mode .presentation-slide pre {
+    background-color: #f1f1f1 !important;
+    padding: 1rem !important;
+    border-radius: 4px !important;
+    font-size: 1.2rem !important;
+    overflow-x: auto !important;
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body.presentation-mode .presentation-slide {
+      background-color: #1a1a1a !important;
+      color: #ffffff !important;
+    }
+    
+    body.presentation-mode .presentation-slide pre {
+      background-color: #2d2d2d !important;
+      color: #e0e0e0 !important;
+    }
+  }
+  
+  :root {
+    --presentation-progress: 0%;
+    --slide-transition-duration: 300ms;
+  }
+  
+  /* Controls styles */
+  .presentation-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: white;
+  }
+  
+  .presentation-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .presentation-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  .presentation-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: var(--presentation-progress);
+    background-color: #3b82f6;
+    z-index: 99;
+    transition: width 0.3s ease;
+  }
+  
+  .presentation-indicators {
+    font-size: 14px;
+    font-family: sans-serif;
+  }
+  
+  /* Slide styles */
+  .presentation-slide {
+    position: relative;
+    display: none;
+    flex-direction: column;
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: white;
+    transition: transform var(--slide-transition-duration) ease-in-out;
+  }
+  
+  .presentation-slide.active {
+    display: flex;
+  }
+  
+  /* Fullscreen mode */
+  body.presentation-fullscreen {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body.presentation-fullscreen .presentation-slide {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 40px;
+    border: none;
+    border-radius: 0;
+    box-sizing: border-box;
+    overflow: auto;
+    z-index: 90;
+  }
+  
+  body.presentation-fullscreen .presentation-slide.active {
+    display: flex;
+  }
+  
+  body.presentation-fullscreen > *:not(.presentation-slide, .presentation-controls, .presentation-progress) {
+    display: none;
+  }
+  
+  /* Style heading elements */
+  .presentation-slide h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .presentation-slide h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  /* In fullscreen mode, make headings larger */
+  body.presentation-fullscreen .presentation-slide h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  body.presentation-fullscreen .presentation-slide h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  body.presentation-fullscreen .presentation-slide p,
+  body.presentation-fullscreen .presentation-slide li {
+    font-size: 1.5rem;
+  }
+  
+  /* Basic slide content styling */
+  .presentation-slide ul,
+  .presentation-slide ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .presentation-slide p {
+    margin-bottom: 1rem;
+  }
+  
+  .presentation-slide pre {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .presentation-slide {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      border-color: #333;
+    }
+    
+    .presentation-slide pre {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+  }
+</style> 

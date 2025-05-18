@@ -1,0 +1,29 @@
+<section class="presentation-slide">
+  <slot />
+</section>
+
+<style>
+  .presentation-slide {
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9fafb;
+  }
+  
+  /* Condensed preview style */
+  :global(body:not(.presentation-mode) .presentation-slide h1) {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  :global(body:not(.presentation-mode) .presentation-slide h2) {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  :global(body:not(.presentation-mode) .presentation-slide p) {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+</style> 

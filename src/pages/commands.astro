@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Commands">
+  <div class="max-w-4xl w-full">
+    <h1 class="text-3xl font-semibold text-gray-800 mb-6 text-center">Essential Git Commands</h1>
+    <ul class="space-y-4">
+      <li>
+        <code class="bg-gray-100 px-2 py-1 rounded text-sm text-blue-600">git init</code>
+        <p class="text-gray-600">Initialize a new Git repository.</p>
+      </li>
+      <li>
+        <code class="bg-gray-100 px-2 py-1 rounded text-sm text-blue-600">git clone &lt;repo_url&gt;</code>
+        <p class="text-gray-600">Clone an existing repository.</p>
+      </li>
+      <li>
+        <code class="bg-gray-100 px-2 py-1 rounded text-sm text-blue-600">git add .</code>
+        <p class="text-gray-600">Stage all changes for commit.</p>
+      </li>
+      <li>
+        <code class="bg-gray-100 px-2 py-1 rounded text-sm text-blue-600">git commit -m "message"</code>
+        <p class="text-gray-600">Commit staged changes with a message.</p>
+      </li>
+      <li>
+        <code class="bg-gray-100 px-2 py-1 rounded text-sm text-blue-600">git push origin main</code>
+        <p class="text-gray-600">Push commits to the main branch.</p>
+      </li>
+    </ul>
+  </div>
+</Layout>

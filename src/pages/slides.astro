@@ -1,0 +1,337 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Introduction to Git: Baby Steps to DevOps and Astro">
+  <div class="presentation">
+    <div class="slides">
+      <div class="slide active" id="slide-1">
+        <div class="content">
+          <h1>Introduction to Git</h1>
+          <p>Baby Steps to DevOps and Astro</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-2">
+        <div class="content">
+          <h2>What is Git?</h2>
+          <p>A distributed version control system.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-3">
+        <div class="content">
+          <h2>Why Use Git?</h2>
+          <ul>
+            <li>Track changes</li>
+            <li>Collaborate with others</li>
+            <li>Revert to previous states</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-4">
+        <div class="content">
+          <h2>Essential Git Commands</h2>
+          <pre><code>
+git init
+git add .
+git commit -m "Initial commit"
+git push origin main
+          </code></pre>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-5">
+        <div class="content">
+          <h2>Introduction to DevOps</h2>
+          <p>Bridging development and operations for faster delivery.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-6">
+        <div class="content">
+          <h2>Astro Framework Overview</h2>
+          <p>Building fast, content-focused websites.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-7">
+        <div class="content">
+          <h2>Tailwind CSS Introduction</h2>
+          <p>Utility-first CSS for rapid UI development.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-8">
+        <div class="content">
+          <h2>Project Setup</h2>
+          <p>Initializing an Astro project with Tailwind CSS.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-9">
+        <div class="content">
+          <h2>Live Demo</h2>
+          <p>Cloning, committing, and pushing to GitHub.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-10">
+        <div class="content">
+          <h2>Deployment</h2>
+          <p>Hosting your Astro site on platforms like Vercel.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-11">
+        <div class="content">
+          <h2>Resources & Next Steps</h2>
+          <p>Further learning and practice.</p>
+        </div>
+      </div>
+      
+      <div class="slide" id="slide-12">
+        <div class="content">
+          <h2>Q&A</h2>
+          <p>Open floor for questions.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="prev-btn" title="Previous Slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <div id="slide-counter">1/12</div>
+      <button id="next-btn" title="Next Slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+      <button id="fullscreen-btn" title="Toggle Fullscreen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Get all elements
+  const slides = document.querySelectorAll('.slide');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const slideCounter = document.getElementById('slide-counter');
+  const presentation = document.querySelector('.presentation');
+  
+  let currentSlide = 0;
+  
+  // Update the slide counter
+  function updateCounter(): void {
+    if (slideCounter) {
+      slideCounter.textContent = `${currentSlide + 1}/${slides.length}`;
+    }
+  }
+  
+  // Show a specific slide
+  function showSlide(index: number): void {
+    // Ensure index is within bounds
+    if (index < 0) index = 0;
+    if (index >= slides.length) index = slides.length - 1;
+    
+    // Update current slide
+    currentSlide = index;
+    
+    // Hide all slides and show the current one
+    slides.forEach((slide, i) => {
+      if (i === currentSlide) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    });
+    
+    // Update counter
+    updateCounter();
+  }
+  
+  // Go to next slide
+  function nextSlide(): void {
+    if (currentSlide < slides.length - 1) {
+      showSlide(currentSlide + 1);
+    }
+  }
+  
+  // Go to previous slide
+  function prevSlide(): void {
+    if (currentSlide > 0) {
+      showSlide(currentSlide - 1);
+    }
+  }
+  
+  // Toggle fullscreen
+  function toggleFullscreen(): void {
+    if (!document.fullscreenElement) {
+      if (presentation) {
+        presentation.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      }
+    } else {
+      document.exitFullscreen();
+    }
+  }
+  
+  // Setup navigation
+  prevBtn?.addEventListener('click', prevSlide);
+  nextBtn?.addEventListener('click', nextSlide);
+  fullscreenBtn?.addEventListener('click', toggleFullscreen);
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    } else if (e.key === 'f') {
+      toggleFullscreen();
+    }
+  });
+  
+  // Initialize
+  updateCounter();
+</script>
+
+<style>
+  /* Main container */
+  .presentation {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  /* Slides container */
+  .slides {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Individual slide */
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+  
+  .slide.active {
+    display: flex;
+  }
+  
+  /* Slide content */
+  .content {
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  /* Controls */
+  .controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 15px;
+    border-radius: 50px;
+    z-index: 100;
+  }
+  
+  .controls button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  
+  .controls button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  #slide-counter {
+    color: white;
+    font-size: 14px;
+    min-width: 40px;
+    text-align: center;
+  }
+  
+  /* Typography */
+  .slide h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .slide h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .slide p {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+  
+  .slide ul, .slide ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .slide li {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+  
+  .slide pre {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    .presentation {
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+    
+    .slide pre {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+  }
+</style>

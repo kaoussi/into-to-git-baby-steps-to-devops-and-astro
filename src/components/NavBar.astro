@@ -1,0 +1,28 @@
+---
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'Slides', href: '/slides' },
+  { name: 'Commands', href: '/commands' },
+  { name: 'Deploy', href: '/deploy' },
+];
+---
+
+<nav class="bg-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <div class="flex-shrink-0 text-xl font-bold text-gray-800">
+        Astro DevOps
+      </div>
+      <div class="hidden md:flex space-x-4">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class="text-gray-600 hover:text-blue-600 transition"
+          >
+            {item.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</nav>
